@@ -3,19 +3,19 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Volumes/Home/neto/.oh-my-zsh"
+export ZSH="/Users/neto/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell" 
+ZSH_THEME="spaceship" # "robbyrussell" 
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+# ZSH_THEME_RANDOM_CANDIDATES=("robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 CASE_SENSITIVE="true"
@@ -69,7 +69,34 @@ HIST_STAMPS="dd.mm.yyyy"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zsh-autosuggestions zsh-syntax-highlighting asdf branch brew bundler chruby git ruby rails docker flutter gem gitignore gulp heroku iterm2 node npm npx nvm osx pip postgres rake redis-cli themes vscode xcode zsh_reload zsh-interactive-cd zsh-navigation-tools)
+plugins=(
+	asdf 
+#	branch 
+	brew 
+	bundler
+	git 
+	ruby 
+	rails 
+#	docker 
+#	flutter 
+	gem 
+#	gitignore 
+#	gulp 
+	heroku 
+#	node 
+#	npm 
+#	npx 
+#	nvm 
+	osx 
+	pip 
+	postgres 
+	rake 
+	themes 
+	vscode 
+	zsh_reload 
+	zsh-interactive-cd 
+	zsh-navigation-tools
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,7 +129,98 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 . $HOME/.asdf/asdf.sh
-
 . $HOME/.asdf/completions/asdf.bash
 
+# Spaceship options
+SPACESHIP_CHAR_SYMBOL='❯'
+SPACESHIP_CHAR_SUFFIX=' '
+SPACESHIP_USER_SHOW=always
+SPACESHIP_USER_COLOR=cyan
+#SPACESHIP_DIR_TRUNC=4
+#SPACESHIP_DIR_TRUNC_REPO=false
+SPACESHIP_PROMPT_ADD_NEWLINE=false
+SPACESHIP_PROMPT_SEPARATE_LINE=false
+# Ruby
+SPACESHIP_RUBY_PREFIX='using '
+# SPACESHIP_RUBY_SUFFIX=
+# Git
+SPACESHIP_GIT_STATUS_PREFIX='('
+SPACESHIP_GIT_STATUS_SUFFIX=')'
+# Hostname
+SPACESHIP_HOST_SHOW_FULL=true
+SPACESHIP_HOST_COLOR=202
+SPACESHIP_HOST_COLOR_SSH=202
+# Colors
+#SPACESHIP_USER_COLOR=226
+#SPACESHIP_DIR_COLOR=039
+#SPACESHIP_GIT_BRANCH_COLOR=135
+#SPACESHIP_GIT_STATUS_COLOR=141
+#SPACESHIP_RUBY_COLOR=088
+#SPACESHIP_EXEC_TIME_COLOR=112
+# Symbols
+#SPACESHIP_GIT_SYMBOL='\uF418.'
+#SPACESHIP_RUBY_SYMBOL='\uE21E'
+# Prompt Order
+SPACESHIP_PROMPT_ORDER=(
+  time          # Time stamps section
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  ruby          # Ruby Version
+#  docker        # Docker section
+  exec_time     # Execution time
+  line_sep      # Line break
+#  battery       # Battery level and status
+  vi_mode       # Vi-mode indicator
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+)
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# Resolve problema do git no mac
+function git_prompt_info() {
+  if [[ "$(command git config --get oh-my-zsh.hide-status 2>/dev/null)" != "1" ]]; then
+    ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
+    echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$ZSH_THEME_GIT_PROMPT_SUFFIX"
+  fi
+}
+
 # zprof
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+fi
+
+source "$HOME/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zinit-zsh/z-a-rust \
+    zinit-zsh/z-a-as-monitor \
+    zinit-zsh/z-a-patch-dl \
+    zinit-zsh/z-a-bin-gem-node
+
+### End of Zinit's installer chunk
+zinit light zdharma/fast-syntax-highlighting
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-completions
+
+export PATH="/usr/local/opt/postgresql@12/bin:$PATH"
+
+# heroku autocomplete setup
+HEROKU_AC_ZSH_SETUP_PATH=/Users/neto/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
+
+# colorls
+# source $(dirname $(gem which colorls))/tab_complete.sh
